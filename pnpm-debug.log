@@ -1,0 +1,53 @@
+---
+  0 debug pnpm:scope: 
+    selected: 1
+    workspacePrefix: null
+  1 info pnpm: 
+    message: "A store server is running. All store manipulations are delegated to it."
+    prefix: "/app"
+  2 debug pnpm:package-json: 
+    initial: 
+      name: "discord.js-leveling-bot"
+      version: "1.0.0"
+      description: "> A Discord Leveling Bot built with Discord.js and Canvas made by roefinoavrililo"
+      main: "index.js"
+      repository: 
+        type: "git"
+        url: "git+https://github.com/roefinoavrililo/Discord.JS-Leveling-Bot.git"
+      author: 
+        name: "roefinoavrililo"
+      license: "ISC"
+      bugs: 
+        url: "https://github.com/roefinoavrililo/Discord.JS-Leveling-Bot/issues"
+      homepage: "https://github.com/roefinoavrililo/Discord.JS-Leveling-Bot#readme"
+      engines: 
+        node: ">=12.0.0"
+      dependencies: 
+        better-sqlite3: "^7.1.5"
+        canvas: "^2.7.0"
+        discord.js: "^14.14.1"
+        express: "^4.18.2"
+        fs: "^0.0.2"
+        node-fetch: "^16.9.0"
+        nvm: "0.0.4"
+      scripts: 
+        start: "node index.js"
+      gitHead: "9e270dccbf96069362944e5760d82b9307026f49"
+      readme: "ERROR: No README data found!"
+      _id: "discord.js-leveling-bot@1.0.0"
+    prefix: "/app"
+  3 warn pnpm: 
+    message: "Moving discord.js that was installed by a different package manager to \"node_modules/.ignored"
+    prefix: "/app"
+  4 error pnpm: 
+    message: 
+      errno: -39
+      code: "ENOTEMPTY"
+      syscall: "rename"
+      path: "/rbd/pnpm-volume/9955a5b7-f695-4b8a-881d-a9017fbae080/node_modules/discord.js"
+      dest: "/rbd/pnpm-volume/9955a5b7-f695-4b8a-881d-a9017fbae080/node_modules/.ignored/discord.js"
+    err: 
+      name: "Error"
+      message: "ENOTEMPTY: directory not empty, rename '/rbd/pnpm-volume/9955a5b7-f695-4b8a-881d-a9017fbae080/node_modules/discord.js' -> '/rbd/pnpm-volume/9955a5b7-f695-4b8a-881d-a9017fbae080/node_modules/.ignored/discord.js'"
+      code: "ENOTEMPTY"
+      stack: "Error: ENOTEMPTY: directory not empty, rename '/rbd/pnpm-volume/9955a5b7-f695-4b8a-881d-a9017fbae080/node_modules/discord.js' -> '/rbd/pnpm-volume/9955a5b7-f695-4b8a-881d-a9017fbae080/node_modules/.ignored/discord.js'"
