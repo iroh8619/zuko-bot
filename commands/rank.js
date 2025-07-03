@@ -11,20 +11,26 @@ module.exports = {
 async execute(interaction) {
   console.log(`➡️ /rank started (${interaction.id})`);
 
-  try {
-    try {
-      await interaction.deferReply({ ephemeral: false });
-    } catch (err) {
-      console.error('Failed to defer interaction:', err);
-      return;
-    }
+  // Sanity check: exit early if interaction is already expired
+  if (!interaction || !interaction.isChatInputCommand()) return;
 
+  try {
+    await interaction.deferReply({ ephemeral: false });
+  } catch (err) {
+    console.error('❌ Failed to defer interaction:', err);
+    return; // Interaction likely expired or already handled
+  }
+
+  try {
     const target = interaction.options.getMember('user') || interaction.member;
+
     const score = sql.prepare("SELECT * FROM levels WHERE user = ? AND guild = ?")
       .get(target.id, interaction.guild.id);
 
     if (!score) {
-      return await interaction.editReply({ content: `${target.displayName || target.user.username} has no XP yet!` });
+      return await interaction.editReply({
+        content: `${target.displayName || target.user.username} has no XP yet!`
+      });
     }
 
     const top = sql.prepare("SELECT user, totalXP FROM levels WHERE guild = ? ORDER BY totalXP DESC").all(interaction.guild.id);
@@ -33,21 +39,26 @@ async execute(interaction) {
 
     const embed = new EmbedBuilder()
       .setColor(0xFFD700)
-      .setAuthor({ name: target.displayName || target.user.username, iconURL: target.displayAvatarURL({ dynamic: true }) })
+      .setAuthor({
+        name: target.displayName || target.user.username,
+        iconURL: target.displayAvatarURL({ dynamic: true })
+      })
       .setTitle('🏅 Rank Information')
       .addFields(
         { name: 'Level', value: `${score.level}`, inline: true },
         { name: 'XP', value: `${score.xp} / ${nextXP}`, inline: true },
         { name: 'Rank', value: `#${rank}`, inline: true }
       )
-      .setFooter({ text: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }) })
+      .setFooter({
+        text: interaction.guild.name,
+        iconURL: interaction.guild.iconURL({ dynamic: true })
+      })
       .setTimestamp();
 
-    return await interaction.editReply({ embeds: [embed] });
+    await interaction.editReply({ embeds: [embed] });
 
   } catch (err) {
-    console.error('Error in /rank:', err);
-
+    console.error('❌ Error in /rank:', err);
     if (interaction.deferred || interaction.replied) {
       await interaction.editReply({ content: 'Une erreur est survenue.' }).catch(console.error);
     } else {
@@ -55,4 +66,5 @@ async execute(interaction) {
     }
   }
 }
+
 };
