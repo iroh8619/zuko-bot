@@ -13,6 +13,7 @@ module.exports = {
     ),
 
   async execute(interaction) {
+    console.log('➡️ /rank command started');
     try {
       // Accuse réception rapidement (obligatoire si traitement > 3s)
       await interaction.deferReply({ ephemeral: true });
