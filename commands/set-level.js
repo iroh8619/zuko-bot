@@ -1,6 +1,6 @@
 const Discord = require("discord.js");
 const SQlite = require("better-sqlite3");
-const sql = new SQlite('./mainDB.sqlite');
+const sql = new SQLite('/data/mainDB.sqlite');
 const { Client, GatewayIntentBits } = require("discord.js");
 
 const client = new Client({
