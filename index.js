@@ -4,7 +4,8 @@ const { ReadableStream } = require('web-streams-polyfill');
 }
 
 const fs = require('fs');
-const dbDir = '/data';
+const path = require('path');
+const dbDir = path.join(__dirname, 'data');
 if (!fs.existsSync(dbDir)) {
   fs.mkdirSync(dbDir);
 }
@@ -18,7 +19,7 @@ const fetch = require('node-fetch');
 const config = require('./config.json');
 
 
-const sql = new SQLite('/data/mainDB.sqlite');
+const sql = new SQLite(path.join(dbDir, 'mainDB.sqlite'));
 const app = express();
 const port = process.env.PORT || 3000;
 
