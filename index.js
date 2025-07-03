@@ -55,12 +55,33 @@ function initializeDatabase() {
   client.setLevel = sql.prepare("INSERT OR REPLACE INTO levels (id, user, guild, xp, level, totalXP) VALUES (@id, @user, @guild, @xp, @level, @totalXP)");
 }
 
+function syncFromUsersJSON(guildId) {
+  try {
+    const leaderboard = JSON.parse(readFileSync('./users.json', 'utf-8'));
+    for (const user of leaderboard) {
+      const id = `${user.userId}-${guildId}`;
+      client.setLevel.run({
+        id,
+        user: user.userId,
+        guild: guildId,
+        xp: user.xp,
+        level: user.level,
+        totalXP: user.totalXP
+      });
+    }
+    console.log('📥 Database synchronized from users.json');
+  } catch (e) {
+    console.error('❌ Failed to sync from users.json:', e);
+  }
+}
+
 const { execSync } = require('child_process');
 
 client.once(Events.ClientReady, () => {
 
   console.log(`Logged in as ${client.user.tag}`);
   initializeDatabase();
+  syncFromUsersJSON('905876133151637575');
 
   const activities = [
     { name: 'Uncle making tea', type: 3 },
