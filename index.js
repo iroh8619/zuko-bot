@@ -14,7 +14,7 @@ const fetch = require('node-fetch');
 const config = require('./config.json');
 
 
-const sql = new SQLite('./mainDB.sqlite');
+const sql = new SQLite('/data/mainDB.sqlite');
 const app = express();
 const port = process.env.PORT || 3000;
 
