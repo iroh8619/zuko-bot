@@ -13,7 +13,7 @@ async execute(interaction) {
 
   try {
     try {
-      await interaction.deferReply({ ephemeral: true });
+      await interaction.deferReply({ ephemeral: false });
     } catch (err) {
       console.error('Failed to defer interaction:', err);
       return;
