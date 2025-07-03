@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const SQLite = require('better-sqlite3');
-const sql = new SQLite('./mainDB.sqlite');
+const sql = new SQLite('/data/mainDB.sqlite');
 
 module.exports = {
   data: new SlashCommandBuilder()
