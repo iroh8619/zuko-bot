@@ -6,65 +6,50 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('rank')
     .setDescription("Check a user's rank and XP")
-    .addUserOption(o => o.setName('user').setDescription('The user').setRequired(false)),
+    .addUserOption(option =>
+      option.setName('user')
+        .setDescription('The user to check rank for')
+        .setRequired(false)
+    ),
 
-async execute(interaction) {
-  console.log(`➡️ /rank started (${interaction.id})`);
+  async execute(interaction) {
+    try {
+      const target = interaction.options.getMember('user') || interaction.member;
 
-  // Sanity check: exit early if interaction is already expired
-  if (!interaction || !interaction.isChatInputCommand()) return;
+      const getScore = sql.prepare("SELECT * FROM levels WHERE user = ? AND guild = ?");
+      const score = getScore.get(target.id, interaction.guild.id);
 
-  try {
-    await interaction.deferReply({ ephemeral: false });
-  } catch (err) {
-    console.error('❌ Failed to defer interaction:', err);
-    return; // Interaction likely expired or already handled
-  }
+      if (!score) {
+        return interaction.reply({ content: `${target.displayName} has no XP yet!`, ephemeral: true });
+      }
 
-  try {
-    const target = interaction.options.getMember('user') || interaction.member;
+      const topUsers = sql.prepare("SELECT * FROM levels WHERE guild = ? ORDER BY totalXP DESC").all(interaction.guild.id);
+      const rank = topUsers.findIndex(u => u.user === target.id) + 1;
 
-    const score = sql.prepare("SELECT * FROM levels WHERE user = ? AND guild = ?")
-      .get(target.id, interaction.guild.id);
+      const level = score.level;
+      const nextXP = level * 2 * 250 + 250;
 
-    if (!score) {
-      return await interaction.editReply({
-        content: `${target.displayName || target.user.username} has no XP yet!`
-      });
-    }
+      const embed = new EmbedBuilder()
+        .setColor('#FFD700')
+        .setAuthor({
+          name: target.displayName || target.user.username,
+          iconURL: target.displayAvatarURL({ dynamic: true })
+        })
+        .setTitle('🏅 Rank Information')
+        .addFields(
+          { name: 'Level', value: level.toString(), inline: true },
+          { name: 'XP', value: `${score.xp} / ${nextXP}`, inline: true },
+          { name: 'Rank', value: `#${rank}`, inline: true }
+        )
+        .setThumbnail(interaction.guild.iconURL({ dynamic: true }))
+        .setFooter({ text: `Server: ${interaction.guild.name}`, iconURL: interaction.guild.iconURL({ dynamic: true }) })
+        .setTimestamp();
 
-    const top = sql.prepare("SELECT user, totalXP FROM levels WHERE guild = ? ORDER BY totalXP DESC").all(interaction.guild.id);
-    const rank = top.findIndex(u => u.user === target.id) + 1;
-    const nextXP = score.level * 2 * 250 + 250;
+      await interaction.reply({ embeds: [embed] });
 
-    const embed = new EmbedBuilder()
-      .setColor(0xFFD700)
-      .setAuthor({
-        name: target.displayName || target.user.username,
-        iconURL: target.displayAvatarURL({ dynamic: true })
-      })
-      .setTitle('🏅 Rank Information')
-      .addFields(
-        { name: 'Level', value: `${score.level}`, inline: true },
-        { name: 'XP', value: `${score.xp} / ${nextXP}`, inline: true },
-        { name: 'Rank', value: `#${rank}`, inline: true }
-      )
-      .setFooter({
-        text: interaction.guild.name,
-        iconURL: interaction.guild.iconURL({ dynamic: true })
-      })
-      .setTimestamp();
-
-    await interaction.editReply({ embeds: [embed] });
-
-  } catch (err) {
-    console.error('❌ Error in /rank:', err);
-    if (interaction.deferred || interaction.replied) {
-      await interaction.editReply({ content: 'Une erreur est survenue.' }).catch(console.error);
-    } else {
-      await interaction.reply({ content: 'Une erreur est survenue.', ephemeral: true }).catch(console.error);
+    } catch (error) {
+      console.error("An error occurred in the rank command:", error);
+      interaction.reply({ content: "An error occurred while fetching the rank. Please try again later.", ephemeral: true });
     }
   }
-}
-
 };
