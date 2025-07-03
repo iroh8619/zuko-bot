@@ -104,8 +104,6 @@ client.on(Events.InteractionCreate, async interaction => {
   }
 });
 
-const fs = require('fs');
-
 function updateUserJSON(guildId) {
   const users = sql.prepare("SELECT * FROM levels WHERE guild = ? ORDER BY totalXP DESC").all(guildId);
   if (!users.length) return;
