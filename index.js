@@ -231,6 +231,7 @@ while (level.xp >= (level.level * 2 * 250 + 250)) {
     }
   }
 }
+}
 
 
   client.setLevel.run(level);
