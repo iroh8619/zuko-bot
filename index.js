@@ -3,12 +3,7 @@ const { ReadableStream } = require('web-streams-polyfill');
   global.ReadableStream = ReadableStream;
 }
 
-const fs = require('fs');
-const path = require('path');
-const dbDir = path.join(__dirname, 'data');
-if (!fs.existsSync(dbDir)) {
-  fs.mkdirSync(dbDir);
-}
+
 
 const { Client, GatewayIntentBits, Partials, Collection, Events, EmbedBuilder } = require('discord.js');
 const { readdirSync } = require('fs');
@@ -19,7 +14,7 @@ const fetch = require('node-fetch');
 const config = require('./config.json');
 
 
-const sql = new SQLite(path.join(dbDir, 'mainDB.sqlite'));
+const sql = new SQLite('./mainDB.sqlite');
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -39,7 +34,6 @@ const client = new Client({
 client.commands = new Collection();
 const talkedRecently = new Map();
 
-initializeDatabase();
 
 // Load commands from ./commands
 const commandFiles = readdirSync(join(__dirname, 'commands')).filter(file => file.endsWith('.js'));
@@ -69,8 +63,6 @@ function initializeDatabase() {
 
 client.once(Events.ClientReady, () => {
   console.log(`Logged in as ${client.user.tag}`);
-
-  initializeDatabase();
   
    const activities = [
     { name: 'Uncle making tea', type: 3 },
@@ -91,6 +83,7 @@ client.once(Events.ClientReady, () => {
   // Set initial activity and then alternate every 10 seconds
   updateActivity();
   setInterval(updateActivity, 10000);
+  initializeDatabase();
 });
 
 // Slash Command Handling
@@ -106,6 +99,8 @@ client.on(Events.InteractionCreate, async interaction => {
     await interaction.reply({ content: 'There was an error executing this command.', ephemeral: true });
   }
 });
+
+const fs = require('fs');
 
 function updateUserJSON(guildId) {
   const users = sql.prepare("SELECT * FROM levels WHERE guild = ? ORDER BY totalXP DESC").all(guildId);
@@ -208,4 +203,4 @@ if (matchingRole) {
   setTimeout(() => talkedRecently.delete(message.author.id), 10 * 1000);
 });
 
-client.login(process.env.DISCORD_TOKEN);
+client.login(config.token);
