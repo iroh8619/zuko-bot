@@ -57,13 +57,13 @@ function initializeDatabase() {
 
 function syncFromUsersJSON(guildId) {
   try {
-    const raw = readFileSync('./users.json', 'utf-8');
+    const raw = readFileSync('./user.json', 'utf-8');
     let leaderboard;
 
     try {
       leaderboard = JSON.parse(raw);
     } catch (err) {
-      console.error('❌ users.json est invalide. Corrige manuellement ce fichier.');
+      console.error('❌ user.json est invalide. Corrige manuellement ce fichier.');
       console.error(err.message);
       return;
     }
@@ -80,9 +80,9 @@ function syncFromUsersJSON(guildId) {
       });
     }
 
-    console.log('📥 Database synchronized from users.json');
+    console.log('📥 Database synchronized from user.json');
   } catch (e) {
-    console.error('❌ Failed to sync from users.json:', e);
+    console.error('❌ Failed to sync from user.json:', e);
   }
 }
 
@@ -124,14 +124,14 @@ async function updateUserJSON(guildId) {
   }));
 
   const content = JSON.stringify(leaderboard, null, 2);
-  const filePath = './users.json';
+  const filePath = './user.json';
   writeFileSync(filePath + '.tmp', content);
   require('fs').renameSync(filePath + '.tmp', filePath);
 
 
   const githubToken = process.env.GITHUB_TOKEN;
   const githubRepo = 'iroh8619/zuko-bot';
-  const githubFilePath = 'users.json';
+  const githubFilePath = 'user.json';
 
   try {
     const res = await fetch(`https://api.github.com/repos/${githubRepo}/contents/${githubFilePath}`, {
@@ -144,7 +144,7 @@ async function updateUserJSON(guildId) {
 
     const oldContent = Buffer.from(data.content, 'base64').toString();
     if (crypto.createHash('sha256').update(oldContent).digest('hex') === crypto.createHash('sha256').update(content).digest('hex')) {
-      return console.log("⚠️ No changes in users.json");
+      return console.log("⚠️ No changes in user.json");
     }
 
     await fetch(`https://api.github.com/repos/${githubRepo}/contents/${githubFilePath}`, {
@@ -160,7 +160,7 @@ async function updateUserJSON(guildId) {
       })
     });
 
-    console.log('✅ users.json updated on GitHub');
+    console.log('✅ user.json updated on GitHub');
   } catch (e) {
     console.error('❌ GitHub update failed:', e);
   }
