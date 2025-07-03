@@ -1,6 +1,6 @@
 const fs = require('fs');
 const SQLite = require('better-sqlite3');
-const sql = new SQLite('./mainDB.sqlite');
+const sql = new SQLite('/data/mainDB.sqlite');
 
 // Replace this with your actual guild ID
 const guildId = '905876133151637575';
