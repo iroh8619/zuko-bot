@@ -3,7 +3,11 @@ const { ReadableStream } = require('web-streams-polyfill');
   global.ReadableStream = ReadableStream;
 }
 
-
+const fs = require('fs');
+const dbDir = '/data';
+if (!fs.existsSync(dbDir)) {
+  fs.mkdirSync(dbDir);
+}
 
 const { Client, GatewayIntentBits, Partials, Collection, Events, EmbedBuilder } = require('discord.js');
 const { readdirSync } = require('fs');
