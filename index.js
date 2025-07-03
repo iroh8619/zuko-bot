@@ -203,4 +203,4 @@ if (matchingRole) {
   setTimeout(() => talkedRecently.delete(message.author.id), 10 * 1000);
 });
 
-client.login(config.token);
+client.login(process.env.DISCORD_TOKEN);
