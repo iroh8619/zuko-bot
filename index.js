@@ -57,7 +57,17 @@ function initializeDatabase() {
 
 function syncFromUsersJSON(guildId) {
   try {
-    const leaderboard = JSON.parse(readFileSync('./users.json', 'utf-8'));
+    const raw = readFileSync('./users.json', 'utf-8');
+    let leaderboard;
+
+    try {
+      leaderboard = JSON.parse(raw);
+    } catch (err) {
+      console.error('❌ users.json est invalide. Corrige manuellement ce fichier.');
+      console.error(err.message);
+      return;
+    }
+
     for (const user of leaderboard) {
       const id = `${user.userId}-${guildId}`;
       client.setLevel.run({
@@ -69,11 +79,13 @@ function syncFromUsersJSON(guildId) {
         totalXP: user.totalXP
       });
     }
+
     console.log('📥 Database synchronized from users.json');
   } catch (e) {
     console.error('❌ Failed to sync from users.json:', e);
   }
 }
+
 
 const { execSync } = require('child_process');
 
@@ -113,7 +125,9 @@ async function updateUserJSON(guildId) {
 
   const content = JSON.stringify(leaderboard, null, 2);
   const filePath = './users.json';
-  writeFileSync(filePath, content);
+  writeFileSync(filePath + '.tmp', content);
+  require('fs').renameSync(filePath + '.tmp', filePath);
+
 
   const githubToken = process.env.GITHUB_TOKEN;
   const githubRepo = 'iroh8619/zuko-bot';
