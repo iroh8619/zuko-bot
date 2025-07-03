@@ -89,6 +89,7 @@ client.once(Events.ClientReady, () => {
   // Set initial activity and then alternate every 10 seconds
   updateActivity();
   setInterval(updateActivity, 10000);
+  initializeDatabase();
 });
 
 // Slash Command Handling
