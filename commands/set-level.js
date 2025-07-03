@@ -1,4 +1,10 @@
 const Discord = require("discord.js");
+const fs = require('fs');
+const dbDir = '/data';
+if (!fs.existsSync(dbDir)) {
+  fs.mkdirSync(dbDir);
+}
+
 const SQlite = require("better-sqlite3");
 const sql = new SQLite('/data/mainDB.sqlite');
 const { Client, GatewayIntentBits } = require("discord.js");
