@@ -239,7 +239,6 @@ if (matchingRole) {
     updateUserJSON(message.guild.id);
   }, 100);
   console.log(`[XP DEBUG] ${message.author.username} → Level: ${level.level}, XP: ${level.xp}, TotalXP: ${level.totalXP}`);
-  updateUserJSON(message.guild.id);
   talkedRecently.set(message.author.id, Date.now() + 10 * 1000);
   setTimeout(() => talkedRecently.delete(message.author.id), 10 * 1000);
 });
