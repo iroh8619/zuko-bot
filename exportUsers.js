@@ -1,11 +1,12 @@
 // export-users.js
 const fs = require('fs');
-const dbDir = '/data';
+const path = require('path');
+const dbDir = path.join(__dirname, 'data');
 if (!fs.existsSync(dbDir)) {
   fs.mkdirSync(dbDir);
 }
 const SQLite = require('better-sqlite3');
-const sql = new SQLite('/data/mainDB.sqlite');
+const sql = new SQLite(path.join(dbDir, 'mainDB.sqlite'));
 
 const guildId = '905876133151637575'; // Replace with your actual guild ID
 const topUsers = sql.prepare("SELECT * FROM levels WHERE guild = ? ORDER BY totalXP DESC;").all(guildId);
