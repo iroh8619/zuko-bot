@@ -69,6 +69,8 @@ function initializeDatabase() {
 
 client.once(Events.ClientReady, () => {
   console.log(`Logged in as ${client.user.tag}`);
+
+  initializeDatabase();
   
    const activities = [
     { name: 'Uncle making tea', type: 3 },
@@ -89,7 +91,6 @@ client.once(Events.ClientReady, () => {
   // Set initial activity and then alternate every 10 seconds
   updateActivity();
   setInterval(updateActivity, 10000);
-  initializeDatabase();
 });
 
 // Slash Command Handling
