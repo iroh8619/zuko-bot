@@ -55,7 +55,16 @@ function initializeDatabase() {
   client.setLevel = sql.prepare("INSERT OR REPLACE INTO levels (id, user, guild, xp, level, totalXP) VALUES (@id, @user, @guild, @xp, @level, @totalXP)");
 }
 
+const { execSync } = require('child_process');
+
 client.once(Events.ClientReady, () => {
+  try {
+    execSync('git pull origin main', { stdio: 'inherit' });
+    console.log('✅ Dernières modifications GitHub récupérées');
+  } catch (error) {
+    console.error('❌ git pull échoué :', error);
+  }
+
   console.log(`Logged in as ${client.user.tag}`);
   initializeDatabase();
 
@@ -70,6 +79,7 @@ client.once(Events.ClientReady, () => {
     client.user.setActivity(act.name, { type: act.type });
   }, 10000);
 });
+
 
 // ⬆️ Update GitHub with users.json
 async function updateUserJSON(guildId) {
