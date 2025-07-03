@@ -157,6 +157,43 @@ async function updateUserJSON(guildId) {
   }
 }
 
+client.on(Events.InteractionCreate, async interaction => {
+  if (!interaction.isChatInputCommand()) return;
+  const command = client.commands.get(interaction.commandName);
+  if (!command) return;
+
+  let deferred = false;
+
+  // Sécurité : forcer un defer après 2s si le handler tarde
+  const deferTimeout = setTimeout(async () => {
+    if (!interaction.deferred && !interaction.replied) {
+      try {
+        await interaction.deferReply({ ephemeral: true });
+        deferred = true;
+      } catch (e) {
+        console.warn('⏳ Timeout: failed to defer interaction in time.', e);
+      }
+    }
+  }, 2000);
+
+  try {
+    await command.execute(interaction, sql);
+  } catch (error) {
+    console.error(`❌ Error in command ${interaction.commandName}:`, error);
+    if (interaction.deferred || interaction.replied || deferred) {
+      await interaction.editReply({
+        content: 'An error occurred while executing the command. Please try again later.'
+      }).catch(console.error);
+    } else {
+      await interaction.reply({
+        content: 'An error occurred while executing the command. Please try again later.',
+        ephemeral: true
+      }).catch(console.error);
+    }
+  } finally {
+    clearTimeout(deferTimeout); // Nettoie le timeout
+  }
+});
 
 
 // Message-based XP System
