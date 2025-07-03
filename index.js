@@ -103,7 +103,6 @@ client.on(Events.InteractionCreate, async interaction => {
 const fs = require('fs');
 
 async function updateUserJSON(guildId) {
-  console.log(`[GITHUB DEBUG] Top user:`, leaderboard[0]);
   sql.pragma('wal_checkpoint(TRUNCATE)');
   const users = sql.prepare("SELECT * FROM levels WHERE guild = ? ORDER BY totalXP DESC").all(guildId);
   if (!users.length) return;
