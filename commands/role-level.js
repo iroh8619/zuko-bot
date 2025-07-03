@@ -1,4 +1,10 @@
 const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require('discord.js');
+const fs = require('fs');
+const dbDir = '/data';
+if (!fs.existsSync(dbDir)) {
+  fs.mkdirSync(dbDir);
+}
+
 const SQLite = require('better-sqlite3');
 const sql = new SQLite('/data/mainDB.sqlite');
 
