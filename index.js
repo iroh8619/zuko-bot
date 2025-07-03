@@ -20,7 +20,6 @@ const config = require('./config.json');
 
 
 const sql = new SQLite(path.join(dbDir, 'mainDB.sqlite'));
-initializeDatabase();
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -40,6 +39,7 @@ const client = new Client({
 client.commands = new Collection();
 const talkedRecently = new Map();
 
+initializeDatabase();
 
 // Load commands from ./commands
 const commandFiles = readdirSync(join(__dirname, 'commands')).filter(file => file.endsWith('.js'));
