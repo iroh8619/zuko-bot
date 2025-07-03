@@ -14,5 +14,5 @@ const data = topUsers.map((entry, index) => ({
   totalXP: entry.totalXP
 }));
 
-fs.writeFileSync('./users.json', JSON.stringify(data, null, 2));
-console.log('Export completed: users.json');
+fs.writeFileSync('./user.json', JSON.stringify(data, null, 2));
+console.log('Export completed: user.json');
