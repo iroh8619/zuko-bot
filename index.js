@@ -200,27 +200,38 @@ client.on(Events.MessageCreate, async message => {
     level.level += 1;
     level.xp -= nextXP;
 
-    const zukoQuotes = JSON.parse(readFileSync('./quotes.json', 'utf-8')); // déplace tes citations dans quotes.json
-    const msg = zukoQuotes[Math.floor(Math.random() * zukoQuotes.length)];
-    await message.reply(msg.replace(/\{level\}/g, level.level).replace(/\{user\}/g, message.author));
+const zukoQuotes = JSON.parse(readFileSync('./quotes.json', 'utf-8'));
+const roles = JSON.parse(readFileSync('./rolelevels.json', 'utf8'));
+let leveledUp = false;
 
-    const roles = JSON.parse(readFileSync('./rolelevels.json', 'utf8'));
-    const matched = roles.find(r => r.level === level.level);
-    if (matched) {
-      const role = message.guild.roles.cache.get(matched.roleId);
-      if (role && !message.member.roles.cache.has(role.id)) {
-        const lower = roles.filter(r => r.level < level.level).map(r => r.roleId);
-        for (const r of lower) {
-          const oldRole = message.guild.roles.cache.get(r);
-          if (oldRole && message.member.roles.cache.has(oldRole.id)) {
-            await message.member.roles.remove(oldRole).catch(() => {});
-          }
+while (level.xp >= (level.level * 2 * 250 + 250)) {
+  const nextXP = level.level * 2 * 250 + 250;
+  level.xp -= nextXP;
+  level.level += 1;
+  leveledUp = true;
+
+  // Send level up message
+  const msg = zukoQuotes[Math.floor(Math.random() * zukoQuotes.length)];
+  await message.reply(msg.replace(/\{level\}/g, level.level).replace(/\{user\}/g, message.author));
+
+  // Role assignment
+  const matched = roles.find(r => r.level === level.level);
+  if (matched) {
+    const role = message.guild.roles.cache.get(matched.roleId);
+    if (role && !message.member.roles.cache.has(role.id)) {
+      const lower = roles.filter(r => r.level < level.level).map(r => r.roleId);
+      for (const r of lower) {
+        const oldRole = message.guild.roles.cache.get(r);
+        if (oldRole && message.member.roles.cache.has(oldRole.id)) {
+          await message.member.roles.remove(oldRole).catch(() => {});
         }
-        await message.member.roles.add(role).catch(() => {});
-        await message.author.send(`Uncle Iroh says: congrats! You're now **${role.name}** at level **${level.level}**!`).catch(() => {});
       }
+      await message.member.roles.add(role).catch(() => {});
+      await message.author.send(`Uncle Iroh says: congrats! You're now **${role.name}** at level **${level.level}**!`).catch(() => {});
     }
   }
+}
+
 
   client.setLevel.run(level);
   updateUserJSON(message.guild.id);
