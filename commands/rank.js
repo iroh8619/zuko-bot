@@ -14,13 +14,16 @@ module.exports = {
 
   async execute(interaction) {
     try {
+      // ✅ Diffère la réponse pour éviter l'erreur "Unknown interaction"
+      await interaction.deferReply({ ephemeral: true });
+
       const target = interaction.options.getMember('user') || interaction.member;
 
       const getScore = sql.prepare("SELECT * FROM levels WHERE user = ? AND guild = ?");
       const score = getScore.get(target.id, interaction.guild.id);
 
       if (!score) {
-        return interaction.reply({ content: `${target.displayName} has no XP yet!`, ephemeral: true });
+        return await interaction.editReply({ content: `${target.displayName} has no XP yet!` });
       }
 
       const topUsers = sql.prepare("SELECT * FROM levels WHERE guild = ? ORDER BY totalXP DESC").all(interaction.guild.id);
@@ -45,11 +48,21 @@ module.exports = {
         .setFooter({ text: `Server: ${interaction.guild.name}`, iconURL: interaction.guild.iconURL({ dynamic: true }) })
         .setTimestamp();
 
-      await interaction.reply({ embeds: [embed] });
+      // ✅ Utilise editReply au lieu de reply (car on a déjà différé)
+      await interaction.editReply({ embeds: [embed] });
 
     } catch (error) {
       console.error("An error occurred in the rank command:", error);
-      interaction.reply({ content: "An error occurred while fetching the rank. Please try again later.", ephemeral: true });
+      try {
+        // ✅ Empêche double réponse si une erreur a déjà été envoyée
+        if (interaction.deferred || interaction.replied) {
+          await interaction.editReply({ content: "An error occurred while fetching the rank. Please try again later." });
+        } else {
+          await interaction.reply({ content: "An error occurred while fetching the rank. Please try again later.", ephemeral: true });
+        }
+      } catch (e) {
+        console.error("Failed to send error reply:", e);
+      }
     }
   }
 };
