@@ -142,7 +142,7 @@ client.on(Events.InteractionCreate, async interaction => {
   }, 2000);
 
   try {
-    await command.execute(interaction, sql, updateUserJSON);
+    await command.execute(interaction, sql);
   } catch (err) {
     console.error(`❌ Error in /${interaction.commandName}:`, err);
     if (interaction.deferred || interaction.replied || deferred) {
