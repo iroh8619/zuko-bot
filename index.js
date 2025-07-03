@@ -102,7 +102,7 @@ client.on(Events.InteractionCreate, async interaction => {
 
 const fs = require('fs');
 
-function updateUserJSON(guildId) {
+async function updateUserJSON(guildId) {
   const users = sql.prepare("SELECT * FROM levels WHERE guild = ? ORDER BY totalXP DESC").all(guildId);
   if (!users.length) return;
 
@@ -118,8 +118,44 @@ function updateUserJSON(guildId) {
     };
   });
 
-  fs.writeFileSync('./users.json', JSON.stringify(leaderboard, null, 2));
+  const filePath = './users.json';
+  const githubRepo = 'iroh8619/zuko-bot';
+  const githubFilePath = 'users.json';
+  const githubToken = process.env.GITHUB_TOKEN;
+
+  // Écrire localement (toujours utile pour debug)
+  fs.writeFileSync(filePath, JSON.stringify(leaderboard, null, 2));
+
+  try {
+    const getRes = await fetch(`https://api.github.com/repos/${githubRepo}/contents/${githubFilePath}`, {
+      headers: {
+        Authorization: `token ${githubToken}`,
+        Accept: 'application/vnd.github.v3+json'
+      }
+    });
+
+    const fileData = await getRes.json();
+    const encodedContent = Buffer.from(JSON.stringify(leaderboard, null, 2)).toString('base64');
+
+    await fetch(`https://api.github.com/repos/${githubRepo}/contents/${githubFilePath}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `token ${githubToken}`,
+        Accept: 'application/vnd.github.v3+json'
+      },
+      body: JSON.stringify({
+        message: `update XP leaderboard`,
+        content: encodedContent,
+        sha: fileData.sha
+      })
+    });
+
+    console.log("✅ users.json updated on GitHub.");
+  } catch (err) {
+    console.error("❌ Failed to update users.json on GitHub:", err);
+  }
 }
+
 
 
 // Message-based XP System
