@@ -20,6 +20,7 @@ const config = require('./config.json');
 
 
 const sql = new SQLite(path.join(dbDir, 'mainDB.sqlite'));
+initializeDatabase();
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -88,7 +89,6 @@ client.once(Events.ClientReady, () => {
   // Set initial activity and then alternate every 10 seconds
   updateActivity();
   setInterval(updateActivity, 10000);
-  initializeDatabase();
 });
 
 // Slash Command Handling
