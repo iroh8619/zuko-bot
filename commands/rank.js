@@ -1,27 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const fs = require('fs');
-const path = require('path');
-const dbDir = path.join(__dirname, 'data');
-if (!fs.existsSync(dbDir)) {
-  fs.mkdirSync(dbDir);
-}
-
 const SQLite = require('better-sqlite3');
-const sql = new SQLite(path.join(dbDir, 'mainDB.sqlite'));
-
-const initStmt = `
-CREATE TABLE IF NOT EXISTS levels (
-  user TEXT NOT NULL,
-  guild TEXT NOT NULL,
-  xp INTEGER DEFAULT 0,
-  totalXP INTEGER DEFAULT 0,
-  level INTEGER DEFAULT 1,
-  PRIMARY KEY (user, guild)
-);
-`;
-
-sql.exec(initStmt);
-
+const sql = new SQLite('./mainDB.sqlite');
 
 module.exports = {
   data: new SlashCommandBuilder()
