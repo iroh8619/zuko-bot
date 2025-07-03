@@ -6,7 +6,7 @@ if (!fs.existsSync(dbDir)) {
   fs.mkdirSync(dbDir);
 }
 
-const SQlite = require("better-sqlite3");
+const SQLite = require("better-sqlite3");
 const sql = new SQLite(path.join(dbDir, 'mainDB.sqlite'));
 const { Client, GatewayIntentBits } = require("discord.js");
 
