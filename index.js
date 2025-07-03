@@ -175,6 +175,7 @@ client.on(Events.MessageCreate, async message => {
 
   level.xp += xpGain;
   level.totalXP += xpGain;
+  console.log(`[XP DEBUG] ${message.author.username} → Level: ${level.level}, XP: ${level.xp}, TotalXP: ${level.totalXP}`);
 
   if (level.xp >= nextLevelXp) {
     level.xp -= nextLevelXp;
